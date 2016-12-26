@@ -39,7 +39,7 @@
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-int button = 0;
+extern uint16_t button;
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 
@@ -56,8 +56,6 @@ int main(void)
   /* Infinite loop */
   while (1)
   {
-	 button = GPIO_ReadInputDataBit(GPIOC,GPIO_Pin_13);
-
 	 if(button == 1)
 	 {
 		 GPIO_SetBits(GPIOA,GPIO_Pin_5);
