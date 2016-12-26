@@ -27,6 +27,9 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include <stddef.h>
+#include "stm32l1xx.h"
+#include "functions.h"
 
 /** @addtogroup IO_Toggle
   * @{
@@ -36,6 +39,7 @@
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
+int button = 0;
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 
@@ -46,11 +50,22 @@
   */
 int main(void)
 {
-  
+  init_button();
+  init_led();
   
   /* Infinite loop */
   while (1)
   {
+	 button = GPIO_ReadInputDataBit(GPIOC,GPIO_Pin_13);
+
+	 if(button == 1)
+	 {
+		 GPIO_SetBits(GPIOA,GPIO_Pin_5);
+	 }
+	 else
+	 {
+		 GPIO_ResetBits(GPIOA,GPIO_Pin_5);
+	 }
 
   }
 }
