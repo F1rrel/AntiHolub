@@ -39,7 +39,7 @@
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-extern uint16_t button;
+extern uint16_t PIR;
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 
@@ -50,19 +50,19 @@ extern uint16_t button;
   */
 int main(void)
 {
-  init_button();
+  init_PIR();
   init_led();
   
   /* Infinite loop */
   while (1)
   {
-	 if(button == 1)
+	 if(PIR == 1)
 	 {
-		 GPIO_SetBits(GPIOA,GPIO_Pin_5);
+		 GPIO_SetBits(GPIOA,GPIO_Pin_7);
 	 }
 	 else
 	 {
-		 GPIO_ResetBits(GPIOA,GPIO_Pin_5);
+		 GPIO_ResetBits(GPIOA,GPIO_Pin_7);
 	 }
 
   }

@@ -9,7 +9,7 @@
 
 #ifndef FUNCTIONS_H_
 #define FUNCTIONS_H_
-	void init_button(void);
+	void init_PIR(void);
 	void init_led(void);
 
 
