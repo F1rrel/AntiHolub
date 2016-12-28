@@ -14,31 +14,55 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
+	#define CLOCK_CYCLES_PER_SECOND  16000000	// 32MHz
+	#define MAX_RELOAD               0xFFFF		// 16 bits timer (65535)
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-uint16_t PIR;
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 
 
+void init_GPIO(void)
+{
+	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA, ENABLE);	// GPIOA
+
+	// PIR - PA6
+	GPIO_InitTypeDef PIR_InitStructure;
+	PIR_InitStructure.GPIO_Pin = GPIO_Pin_6;			// PA6
+	PIR_InitStructure.GPIO_Mode = GPIO_Mode_IN;		// Input
+	PIR_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;	// Pull up
+	PIR_InitStructure.GPIO_OType = GPIO_OType_PP;		// PushPull
+	PIR_InitStructure.GPIO_Speed = GPIO_Speed_40MHz;	// 40MHz
+	GPIO_Init(GPIOA, &PIR_InitStructure);
+
+	// LED - PA7
+	GPIO_InitTypeDef LED_InitStructure;
+	LED_InitStructure.GPIO_Pin = GPIO_Pin_7;			// PA7
+	LED_InitStructure.GPIO_Mode = GPIO_Mode_OUT;		// Output
+	LED_InitStructure.GPIO_Speed = GPIO_Speed_40MHz;	// 40MHz
+	LED_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;		// No Pull
+	LED_InitStructure.GPIO_OType = GPIO_OType_PP;		// PushPull
+	GPIO_Init(GPIOA, &LED_InitStructure);
+
+	// Configure PA0 as PWM output
+	GPIO_InitTypeDef Timer_gpioStructure;
+	Timer_gpioStructure.GPIO_Pin = GPIO_Pin_0;
+	Timer_gpioStructure.GPIO_OType = GPIO_OType_PP;
+	Timer_gpioStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+	Timer_gpioStructure.GPIO_Mode = GPIO_Mode_AF;
+	Timer_gpioStructure.GPIO_Speed = GPIO_Speed_40MHz;
+	GPIO_PinAFConfig(GPIOA, GPIO_PinSource0, GPIO_AF_TIM2);
+	GPIO_Init(GPIOA, &Timer_gpioStructure);
+
+}
+
 void init_PIR(void)
 {
-	// PIR - PA6
-	GPIO_InitTypeDef GPIO_InitStructure;
+
 	NVIC_InitTypeDef NVIC_InitStructure;
 	EXTI_InitTypeDef EXTI_InitStructure;
 
-	/* Enable clock ------------------------------------------------------------------*/
-	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA, ENABLE);	// GPIOA
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);	// SYSCFG
-
-	// GPIO
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6;			// PA6
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;		// Input
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;	// Pull up
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;		// PushPull
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_40MHz;	// 40MHz
-	GPIO_Init(GPIOC, &GPIO_InitStructure);
 
 	// EXTI
 	SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOA, EXTI_PinSource6);	// Tell system that you will use PA6 for EXTI_Line6
@@ -57,27 +81,40 @@ void init_PIR(void)
 	NVIC_Init(&NVIC_InitStructure);									// Add to NVIC
 }
 
-void init_led(void)
+void init_PWM(void)
 {
-	// LED - PA7
-	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA, ENABLE);
-	GPIO_InitTypeDef GPIO_InitStructure;
+	/*	wanted pulse 20ms = 50Hz
+	 * 	Prescaler = 32 for 1Mhz clock (1 tick = 1 us)
+	 * 	Period = 20000 for prescaler / wanted frequency (1000000/50)
+	 * 	Pulse = 1500 = 1.5ms for middle position (1ms lowest and 2ms highest position)
+	 */
 
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7;			// PA7
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;		// Output
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_40MHz;	// 40MHz
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;		// No Pull
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;		// PushPull
-	GPIO_Init(GPIOA, &GPIO_InitStructure);
+	/*uint32_t period_cycles = CLOCK_CYCLES_PER_SECOND / freq;
+	uint16_t prescaler = (uint16)(period_cycles / MAX_RELOAD + 1);
+	uint16_t overflow = (uint16)((period_cycles + (prescaler / 2)) / prescaler);
+	uint16_t duty = (uint16)(overflow / 2);*/
+
+	/* Configure Timer -----------------------------------------------------*/
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
+
+	TIM_TimeBaseInitTypeDef Timer_InitStructure;
+	Timer_InitStructure.TIM_Prescaler = 32;
+	Timer_InitStructure.TIM_CounterMode = TIM_CounterMode_Up;
+	Timer_InitStructure.TIM_Period = 19999;
+	Timer_InitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
+	TIM_TimeBaseInit(TIM2, &Timer_InitStructure);
+	TIM_Cmd(TIM2, ENABLE);
+
+	/* Configure Timer OC --------------------------------------------------*/
+	TIM_OCInitTypeDef TimerOC_InitStructure;
+	TimerOC_InitStructure.TIM_OCMode = TIM_OCMode_PWM2;
+	TimerOC_InitStructure.TIM_Pulse = 1000;
+	TimerOC_InitStructure.TIM_OutputState = TIM_OutputState_Enable;
+	TimerOC_InitStructure.TIM_OCPolarity = TIM_OCPolarity_Low;
+
+	TIM_OC1Init(TIM2, &TimerOC_InitStructure);	// TIM2 channel 1
+	TIM_OC1PreloadConfig(TIM2, TIM_OCPreload_Enable);
+
 }
 
-void EXTI9_5_IRQHandler(void)
-{
-	 if (EXTI_GetITStatus(EXTI_Line6) != RESET) {
-		/* Do your stuff when PA6 is changed */
-		PIR = GPIO_ReadInputDataBit(GPIOA,GPIO_Pin_6);
 
-		/* Clear interrupt flag */
-		EXTI_ClearITPendingBit(EXTI_Line6);
-	 }
-}

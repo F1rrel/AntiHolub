@@ -39,6 +39,7 @@
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
+uint16_t PIR;
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 
@@ -150,10 +151,20 @@ void SysTick_Handler(void)
 /*  file (startup_stm32l1xx_xx.s).                                            */
 /******************************************************************************/
 /**
-  * @brief  This function handles EXTI15_10_IRQHandler Handler.
+  * @brief  This function handles EXTI9_5_IRQHandler Handler.
   * @param  None
   * @retval None
   */
+void EXTI9_5_IRQHandler(void)
+{
+	 if (EXTI_GetITStatus(EXTI_Line6) != RESET) {
+		/* Do your stuff when PA6 is changed */
+		PIR = GPIO_ReadInputDataBit(GPIOA,GPIO_Pin_6);
+
+		/* Clear interrupt flag */
+		EXTI_ClearITPendingBit(EXTI_Line6);
+	 }
+}
 
 /**
   * @brief  This function handles PPP interrupt request.

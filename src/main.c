@@ -30,6 +30,7 @@
 #include <stddef.h>
 #include "stm32l1xx.h"
 #include "functions.h"
+#include "stm32l1xx_it.h"
 
 /** @addtogroup IO_Toggle
   * @{
@@ -50,8 +51,9 @@ extern uint16_t PIR;
   */
 int main(void)
 {
+  init_GPIO();
   init_PIR();
-  init_led();
+  init_PWM();
   
   /* Infinite loop */
   while (1)
@@ -59,10 +61,13 @@ int main(void)
 	 if(PIR == 1)
 	 {
 		 GPIO_SetBits(GPIOA,GPIO_Pin_7);
+		 TIM2->CCR1 = 1000;
+
 	 }
 	 else
 	 {
 		 GPIO_ResetBits(GPIOA,GPIO_Pin_7);
+		 TIM2->CCR1 = 2000;
 	 }
 
   }

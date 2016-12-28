@@ -10,7 +10,8 @@
 #ifndef FUNCTIONS_H_
 #define FUNCTIONS_H_
 	void init_PIR(void);
-	void init_led(void);
+	void init_GPIO(void);
+	void init_PWM(void);
 
 
 #endif /* FUNCTIONS_H_ */
