@@ -12,6 +12,10 @@
 	void init_PIR(void);
 	void init_GPIO(void);
 	void init_PWM(void);
-
+	uint16_t RNG(void);
+	void servo(void);
+	void delay_ms(uint32_t ms);
+	void SysTick_Init(void);
+	void TimeTick_Decrement(void);
 
 #endif /* FUNCTIONS_H_ */

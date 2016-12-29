@@ -16,7 +16,12 @@
 /* Private define ------------------------------------------------------------*/
 	#define CLOCK_CYCLES_PER_SECOND  16000000	// 32MHz
 	#define MAX_RELOAD               0xFFFF		// 16 bits timer (65535)
+	#define positionLow				 1200
+	#define positionHigh			 2000
+	#define positionCentre			 1600
+	#define resolution				 20			//
 /* Private macro -------------------------------------------------------------*/
+	static __IO uint32_t sysTickCounter;
 /* Private variables ---------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
@@ -116,5 +121,59 @@ void init_PWM(void)
 	TIM_OC1PreloadConfig(TIM2, TIM_OCPreload_Enable);
 
 }
+
+uint16_t RNG(void)
+{
+	uint16_t number;
+	number = TIM2->CNT;		// take value from TIM2 counter
+	if (number > 15) {		// if value is big, take first 4 bits (value 0-15)
+		number = TIM2->CNT & 0b1111;
+	}
+	return (number + 4);
+}
+
+void servo(void)
+{
+	uint16_t position = TIM2->CCR1;
+	uint16_t number = RNG();
+
+	if (position > positionCentre) {
+		TIM2->CCR1 = position - (uint32_t)(((position-positionLow)/20)*number);
+	}
+	else
+	{
+		TIM2->CCR1 = position + (uint32_t)(((positionHigh - position)/20)*number);
+	}
+
+
+}
+
+void SysTick_Init(void) {
+	/****************************************
+	 *SystemFrequency/1000      1ms         *
+	 *SystemFrequency/100000    10us        *
+	 *SystemFrequency/1000000   1us         *
+	 *****************************************/
+	while (SysTick_Config(SystemCoreClock / 1000) != 0) {
+	} // One SysTick interrupt now equals 1ms
+}
+
+/**
+ * This method needs to be called in the SysTick_Handler
+ */
+void TimeTick_Decrement(void) {
+	if (sysTickCounter != 0x00) {
+		sysTickCounter--;
+	}
+}
+
+void delay_ms(uint32_t ms) {
+	sysTickCounter = ms;
+	while (sysTickCounter != 0) {
+	}
+}
+
+
+
 
 

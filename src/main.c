@@ -51,6 +51,7 @@ extern uint16_t PIR;
   */
 int main(void)
 {
+  SysTick_Init();
   init_GPIO();
   init_PIR();
   init_PWM();
@@ -61,13 +62,14 @@ int main(void)
 	 if(PIR == 1)
 	 {
 		 GPIO_SetBits(GPIOA,GPIO_Pin_7);
-		 TIM2->CCR1 = 1000;
+		 servo();
+		 delay_ms(200);
 
 	 }
 	 else
 	 {
 		 GPIO_ResetBits(GPIOA,GPIO_Pin_7);
-		 TIM2->CCR1 = 2000;
+		 TIM2->CCR1 = 1000;
 	 }
 
   }
