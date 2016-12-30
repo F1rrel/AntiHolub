@@ -17,11 +17,11 @@
 	#define CLOCK_CYCLES_PER_SECOND  16000000	// 32MHz
 	#define MAX_RELOAD               0xFFFF		// 16 bits timer (65535)
 	#define positionLow				 1200
-	#define positionHigh			 2000
-	#define positionCentre			 1600
+	#define positionHigh			 2050
+	#define positionCentre			 1625
 	#define resolution				 20			//
 /* Private macro -------------------------------------------------------------*/
-	static __IO uint32_t sysTickCounter;
+	static uint32_t sysTickCounter;
 /* Private variables ---------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
@@ -138,11 +138,11 @@ void servo(void)
 	uint16_t number = RNG();
 
 	if (position > positionCentre) {
-		TIM2->CCR1 = position - (uint32_t)(((position-positionLow)/20)*number);
+		TIM2->CCR1 = position - (uint32_t)(((position-positionLow)/resolution)*number);
 	}
 	else
 	{
-		TIM2->CCR1 = position + (uint32_t)(((positionHigh - position)/20)*number);
+		TIM2->CCR1 = position + (uint32_t)(((positionHigh - position)/resolution)*number);
 	}
 
 

@@ -1,29 +1,9 @@
-/**
-  ******************************************************************************
-  * @file    main.c 
-  * @author  MCD Application Team
-  * @version V1.0.0
-  * @date    11-February-2014
-  * @brief   Main program body
-  ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; COPYRIGHT 2014 STMicroelectronics</center></h2>
-  *
-  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
-  * You may not use this file except in compliance with the License.
-  * You may obtain a copy of the License at:
-  *
-  *        http://www.st.com/software_license_agreement_liberty_v2
-  *
-  * Unless required by applicable law or agreed to in writing, software 
-  * distributed under the License is distributed on an "AS IS" BASIS, 
-  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  * See the License for the specific language governing permissions and
-  * limitations under the License.
-  *
-  ******************************************************************************
-  */
+/*
+ * main.c
+ *
+ *  Created on: 26. 12. 2016
+ *      Author: Filip
+ */
 
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
@@ -38,9 +18,12 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
+	#define positionHome			 800
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-extern uint16_t PIR;
+	extern uint16_t PIR;
+	uint16_t count = 0;
+	uint8_t step = 0;
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 
@@ -59,20 +42,40 @@ int main(void)
   /* Infinite loop */
   while (1)
   {
-	 if(PIR == 1)
-	 {
-		 GPIO_SetBits(GPIOA,GPIO_Pin_7);
-		 servo();
-		 delay_ms(200);
+	  switch (step) {
 
-	 }
-	 else
-	 {
-		 GPIO_ResetBits(GPIOA,GPIO_Pin_7);
-		 TIM2->CCR1 = 1000;
-	 }
+	  	  case 0:
+	  		  TIM2->CCR1 = positionHome;
+	  		  delay_ms(500);
+	  		  step = 1;
+	  		  break;
 
+		  case 1:
+			  if (PIR == 1) {
+				  step = 10;
+			  }
+			  break;
+
+		  case 10:
+			  if ((PIR == 0) && (count > 40)) {
+				  count = 0;
+				  step = 20;
+				  break;
+			  }
+			  count ++;
+			  servo();
+			  delay_ms(250);
+			  break;
+
+		  case 20:
+			  TIM2->CCR1 = positionHome;
+			  step = 1;
+			  delay_ms(10000);
+			  break;
+
+	  }
   }
+
 }
 
 
