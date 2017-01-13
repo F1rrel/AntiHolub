@@ -10,6 +10,7 @@
 #ifndef FUNCTIONS_H_
 #define FUNCTIONS_H_
 	void init_PIR(void);
+	void init_Button(void);
 	void init_GPIO(void);
 	void init_PWM(void);
 	uint16_t RNG(void);

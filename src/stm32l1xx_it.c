@@ -30,6 +30,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32l1xx_it.h"
 #include "main.h"
+#include "functions.h"
 
 /** @addtogroup Template_Project
   * @{
@@ -40,6 +41,7 @@
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 uint16_t PIR;
+uint16_t Button;
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 
@@ -158,13 +160,24 @@ void SysTick_Handler(void)
   */
 void EXTI9_5_IRQHandler(void)
 {
-	 if (EXTI_GetITStatus(EXTI_Line6) != RESET) {
+	if (EXTI_GetITStatus(EXTI_Line6) != RESET) {
 		/* Do your stuff when PA6 is changed */
 		PIR = GPIO_ReadInputDataBit(GPIOA,GPIO_Pin_6);
 
 		/* Clear interrupt flag */
 		EXTI_ClearITPendingBit(EXTI_Line6);
 	 }
+}
+
+void EXTI15_10_IRQHandler(void) {
+    /* Make sure that interrupt flag is set */
+    if (EXTI_GetITStatus(EXTI_Line10) != RESET) {
+        /* Do your stuff when PD0 is changed */
+        Button = 1;
+
+        /* Clear interrupt flag */
+        EXTI_ClearITPendingBit(EXTI_Line10);
+    }
 }
 
 /**

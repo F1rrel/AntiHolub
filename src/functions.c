@@ -29,25 +29,27 @@
 
 void init_GPIO(void)
 {
-	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA, ENABLE);	// GPIOA
+	// enable clocks
+	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA, ENABLE);		// GPIOA
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);	// SYSCFG
 
 	// PIR - PA6
 	GPIO_InitTypeDef PIR_InitStructure;
 	PIR_InitStructure.GPIO_Pin = GPIO_Pin_6;			// PA6
-	PIR_InitStructure.GPIO_Mode = GPIO_Mode_IN;		// Input
-	PIR_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;	// Pull up
+	PIR_InitStructure.GPIO_Mode = GPIO_Mode_IN;			// Input
+	PIR_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;		// Pull up
 	PIR_InitStructure.GPIO_OType = GPIO_OType_PP;		// PushPull
 	PIR_InitStructure.GPIO_Speed = GPIO_Speed_40MHz;	// 40MHz
 	GPIO_Init(GPIOA, &PIR_InitStructure);
 
-	// LED - PA7
-	GPIO_InitTypeDef LED_InitStructure;
-	LED_InitStructure.GPIO_Pin = GPIO_Pin_7;			// PA7
-	LED_InitStructure.GPIO_Mode = GPIO_Mode_OUT;		// Output
-	LED_InitStructure.GPIO_Speed = GPIO_Speed_40MHz;	// 40MHz
-	LED_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;		// No Pull
-	LED_InitStructure.GPIO_OType = GPIO_OType_PP;		// PushPull
-	GPIO_Init(GPIOA, &LED_InitStructure);
+	// Button - PA10
+	GPIO_InitTypeDef Button_InitStructure;
+	Button_InitStructure.GPIO_Pin = GPIO_Pin_10;			// PA10
+	Button_InitStructure.GPIO_Mode = GPIO_Mode_IN;			// Input
+//	Button_InitStructure.GPIO_Speed = GPIO_Speed_40MHz;		// 40MHz
+	Button_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;		// Pull down
+	Button_InitStructure.GPIO_OType = GPIO_OType_PP;		// PushPull
+	GPIO_Init(GPIOA, &Button_InitStructure);
 
 	// Configure PA0 as PWM output
 	GPIO_InitTypeDef Timer_gpioStructure;
@@ -67,8 +69,6 @@ void init_PIR(void)
 	NVIC_InitTypeDef NVIC_InitStructure;
 	EXTI_InitTypeDef EXTI_InitStructure;
 
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);	// SYSCFG
-
 	// EXTI
 	SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOA, EXTI_PinSource6);	// Tell system that you will use PA6 for EXTI_Line6
 
@@ -81,7 +81,29 @@ void init_PIR(void)
 	// Add IRQ vector to NVIC
 	NVIC_InitStructure.NVIC_IRQChannel = EXTI9_5_IRQn;				// PA6 is on EXTI9_5_IRQn vector
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x00;	// Set priority
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x00;			// Set sub priority
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x01;			// Set sub priority (second highest)
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;					// Enable interrupt
+	NVIC_Init(&NVIC_InitStructure);									// Add to NVIC
+}
+
+void init_Button(void)
+{
+	NVIC_InitTypeDef NVIC_InitStructure;
+	EXTI_InitTypeDef EXTI_InitStructure;
+
+	// EXTI
+	SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOA, EXTI_PinSource10);	// Tell system that you will use PA10 for EXTI_Line10
+
+	EXTI_InitStructure.EXTI_Line = EXTI_Line10;						// PA10 is connected to EXTI_Line10
+	EXTI_InitStructure.EXTI_LineCmd = ENABLE;						// Enable interrupt
+	EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;				// Interrupt mode
+	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising;			// Triggers on falling edge
+	EXTI_Init(&EXTI_InitStructure);									// Add to EXTI
+
+	// Add IRQ vector to NVIC
+	NVIC_InitStructure.NVIC_IRQChannel = EXTI15_10_IRQn;			// PA10 is on EXTI15_10_IRQn vector
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x00;	// Set priority
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x00;			// Set sub priority (highest)
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;					// Enable interrupt
 	NVIC_Init(&NVIC_InitStructure);									// Add to NVIC
 }

@@ -22,6 +22,7 @@
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 	extern uint16_t PIR;
+	extern uint16_t Button;
 	uint16_t count = 0;
 	uint8_t step = 0;
 /* Private function prototypes -----------------------------------------------*/
@@ -37,6 +38,7 @@ int main(void)
   SysTick_Init();
   init_GPIO();
   init_PIR();
+  init_Button();
   init_PWM();
   
   /* Infinite loop */
@@ -73,6 +75,20 @@ int main(void)
 			  delay_ms(10000);
 			  break;
 
+		  case 100:	// Sleep mode
+			  if (Button == 1) {
+				  Button = 0;
+				  step = 1;
+			  }
+			  break;
+	  }
+
+	  // Go to sleep mode
+	  if ((Button == 1) && (step != 100)) {
+		  TIM2->CCR1 = positionHome;
+		  Button = 0;
+		  count = 0;
+		  step = 100;
 	  }
   }
 
