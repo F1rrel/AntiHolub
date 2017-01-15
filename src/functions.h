@@ -18,5 +18,6 @@
 	void delay_ms(uint32_t ms);
 	void SysTick_Init(void);
 	void TimeTick_Decrement(void);
+	void lowPowerRunMode(void);
 
 #endif /* FUNCTIONS_H_ */

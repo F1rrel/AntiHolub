@@ -116,11 +116,6 @@ void init_PWM(void)
 	 * 	Pulse = 1500 = 1.5ms for middle position (1ms lowest and 2ms highest position)
 	 */
 
-	/*uint32_t period_cycles = CLOCK_CYCLES_PER_SECOND / freq;
-	uint16_t prescaler = (uint16)(period_cycles / MAX_RELOAD + 1);
-	uint16_t overflow = (uint16)((period_cycles + (prescaler / 2)) / prescaler);
-	uint16_t duty = (uint16)(overflow / 2);*/
-
 	/* Configure Timer -----------------------------------------------------*/
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
 
@@ -193,6 +188,43 @@ void delay_ms(uint32_t ms) {
 	sysTickCounter = ms;
 	while (sysTickCounter != 0) {
 	}
+}
+
+void lowPowerRunMode(void) {
+	/* Configure all GPIO as analog to reduce current consumption on non used IOs */
+	GPIO_InitTypeDef GPIO_InitStructure;
+	  /* Enable GPIOs clock */
+	  RCC_AHBPeriphClockCmd(/*RCC_AHBPeriph_GPIOA | */RCC_AHBPeriph_GPIOB | RCC_AHBPeriph_GPIOC |
+							RCC_AHBPeriph_GPIOD | RCC_AHBPeriph_GPIOE | RCC_AHBPeriph_GPIOH |
+							RCC_AHBPeriph_GPIOF | RCC_AHBPeriph_GPIOG, ENABLE);
+
+	  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AN;
+	  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_40MHz;
+	  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+	  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_All;
+	  GPIO_Init(GPIOC, &GPIO_InitStructure);
+	  GPIO_Init(GPIOD, &GPIO_InitStructure);
+	  GPIO_Init(GPIOE, &GPIO_InitStructure);
+	  GPIO_Init(GPIOH, &GPIO_InitStructure);
+	  GPIO_Init(GPIOF, &GPIO_InitStructure);
+	  GPIO_Init(GPIOG, &GPIO_InitStructure);
+	  /*GPIO_Init(GPIOA, &GPIO_InitStructure);*/
+	  GPIO_Init(GPIOB, &GPIO_InitStructure);
+
+	  /* Disable GPIOs clock */
+	  RCC_AHBPeriphClockCmd(/*RCC_AHBPeriph_GPIOA | */RCC_AHBPeriph_GPIOB | RCC_AHBPeriph_GPIOC |
+							RCC_AHBPeriph_GPIOD | RCC_AHBPeriph_GPIOE | RCC_AHBPeriph_GPIOH |
+							RCC_AHBPeriph_GPIOF | RCC_AHBPeriph_GPIOG, DISABLE);
+
+
+	PWR_VoltageScalingConfig(PWR_VoltageScaling_Range2);		// Configures the voltage scaling range
+	/* Wait Until the Voltage Regulator is ready */
+	while (PWR_GetFlagStatus(PWR_FLAG_VOS) != RESET) ;
+
+	PWR_EnterLowPowerRunMode(ENABLE);
+	/* Wait until the system enters RUN LP and the Regulator is in LP mode */
+	while (PWR_GetFlagStatus(PWR_FLAG_REGLP) == RESET) ;
+
 }
 
 

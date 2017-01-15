@@ -40,6 +40,7 @@ int main(void)
   init_PIR();
   init_Button();
   init_PWM();
+  lowPowerRunMode();
   
   /* Infinite loop */
   while (1)
@@ -82,6 +83,8 @@ int main(void)
 			  }
 			  break;
 	  }
+
+	  PWR_EnterLowPowerRunMode(ENABLE);
 
 	  // Go to sleep mode
 	  if ((Button == 1) && (step != 100)) {
