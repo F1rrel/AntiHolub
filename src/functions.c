@@ -14,12 +14,12 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
-	#define CLOCK_CYCLES_PER_SECOND  16000000	// 32MHz
+	#define CLOCK_CYCLES_PER_SECOND  16000000	// 16MHz
 	#define MAX_RELOAD               0xFFFF		// 16 bits timer (65535)
 	#define positionLow				 1200
 	#define positionHigh			 2050
 	#define positionCentre			 1625
-	#define resolution				 20			//
+	#define resolution				 19
 /* Private macro -------------------------------------------------------------*/
 	static uint32_t sysTickCounter;
 /* Private variables ---------------------------------------------------------*/

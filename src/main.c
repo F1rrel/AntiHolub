@@ -84,8 +84,6 @@ int main(void)
 			  break;
 	  }
 
-	  PWR_EnterLowPowerRunMode(ENABLE);
-
 	  // Go to sleep mode
 	  if ((Button == 1) && (step != 100)) {
 		  TIM2->CCR1 = positionHome;
