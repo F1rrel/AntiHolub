@@ -1,5 +1,5 @@
 
-D:\Dokumenty\FEI\7. Semester\VRS\Workspace\AntiHolub\Debug\AntiHolub.elf:     file format elf32-littlearm
+D:\Dokumenty\GitHub\AntiHolub\Debug\AntiHolub.elf:     file format elf32-littlearm
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
@@ -21,23 +21,23 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   ALLOC
   8 .ARM.attributes 00000029  00000000  00000000  00020008  2**0
                   CONTENTS, READONLY
-  9 .debug_info   00004fc6  00000000  00000000  00020031  2**0
+  9 .debug_info   00004faf  00000000  00000000  00020031  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_abbrev 00000f17  00000000  00000000  00024ff7  2**0
+ 10 .debug_abbrev 00000f17  00000000  00000000  00024fe0  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_aranges 00000700  00000000  00000000  00025f10  2**3
+ 11 .debug_aranges 00000700  00000000  00000000  00025ef8  2**3
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_ranges 00000658  00000000  00000000  00026610  2**3
+ 12 .debug_ranges 00000658  00000000  00000000  000265f8  2**3
                   CONTENTS, READONLY, DEBUGGING
- 13 .debug_line   000022a5  00000000  00000000  00026c68  2**0
+ 13 .debug_line   000022a5  00000000  00000000  00026c50  2**0
                   CONTENTS, READONLY, DEBUGGING
- 14 .debug_str    000020f0  00000000  00000000  00028f0d  2**0
+ 14 .debug_str    000020d9  00000000  00000000  00028ef5  2**0
                   CONTENTS, READONLY, DEBUGGING
- 15 .comment      0000007e  00000000  00000000  0002affd  2**0
+ 15 .comment      0000007e  00000000  00000000  0002afce  2**0
                   CONTENTS, READONLY
- 16 .debug_frame  00001d28  00000000  00000000  0002b07c  2**2
+ 16 .debug_frame  00001d28  00000000  00000000  0002b04c  2**2
                   CONTENTS, READONLY, DEBUGGING
- 17 .stabstr      0000003f  00000000  00000000  0002cda4  2**0
+ 17 .stabstr      0000003f  00000000  00000000  0002cd74  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:

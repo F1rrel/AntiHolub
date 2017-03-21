@@ -40,7 +40,7 @@ int main(void)
   init_PIR();
   init_Button();
   init_PWM();
-  lowPowerRunMode();
+  //lowPowerRunMode();
   
   /* Infinite loop */
   while (1)
