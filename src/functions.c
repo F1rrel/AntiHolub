@@ -31,6 +31,7 @@ void init_GPIO(void)
 {
 	// enable clocks
 	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA, ENABLE);		// GPIOA
+	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOC, ENABLE);		// GPIOC
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);	// SYSCFG
 
 	// PIR - PA6
@@ -42,14 +43,14 @@ void init_GPIO(void)
 	PIR_InitStructure.GPIO_Speed = GPIO_Speed_40MHz;	// 40MHz
 	GPIO_Init(GPIOA, &PIR_InitStructure);
 
-	// Button - PA10
+	// Button - PC13 //PA10
 	GPIO_InitTypeDef Button_InitStructure;
-	Button_InitStructure.GPIO_Pin = GPIO_Pin_10;			// PA10
+	Button_InitStructure.GPIO_Pin = GPIO_Pin_13;			// PA10
 	Button_InitStructure.GPIO_Mode = GPIO_Mode_IN;			// Input
 //	Button_InitStructure.GPIO_Speed = GPIO_Speed_40MHz;		// 40MHz
 	Button_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;		// Pull down
 	Button_InitStructure.GPIO_OType = GPIO_OType_PP;		// PushPull
-	GPIO_Init(GPIOA, &Button_InitStructure);
+	GPIO_Init(GPIOC, &Button_InitStructure);
 
 	// Configure PA0 as PWM output
 	GPIO_InitTypeDef Timer_gpioStructure;
@@ -92,9 +93,9 @@ void init_Button(void)
 	EXTI_InitTypeDef EXTI_InitStructure;
 
 	// EXTI
-	SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOA, EXTI_PinSource10);	// Tell system that you will use PA10 for EXTI_Line10
+	SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOC, EXTI_PinSource13);	// Tell system that you will use PA10 for EXTI_Line10
 
-	EXTI_InitStructure.EXTI_Line = EXTI_Line10;						// PA10 is connected to EXTI_Line10
+	EXTI_InitStructure.EXTI_Line = EXTI_Line13;						// PA10 is connected to EXTI_Line10
 	EXTI_InitStructure.EXTI_LineCmd = ENABLE;						// Enable interrupt
 	EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;				// Interrupt mode
 	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising;			// Triggers on falling edge

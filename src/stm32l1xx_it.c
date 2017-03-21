@@ -171,12 +171,12 @@ void EXTI9_5_IRQHandler(void)
 
 void EXTI15_10_IRQHandler(void) {
     /* Make sure that interrupt flag is set */
-    if (EXTI_GetITStatus(EXTI_Line10) != RESET) {
+    if (EXTI_GetITStatus(EXTI_Line13) != RESET) {
         /* Do your stuff when PD0 is changed */
         Button = 1;
 
         /* Clear interrupt flag */
-        EXTI_ClearITPendingBit(EXTI_Line10);
+        EXTI_ClearITPendingBit(EXTI_Line13);
     }
 }
 
